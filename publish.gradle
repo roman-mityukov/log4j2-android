@@ -1,0 +1,78 @@
+apply plugin: 'maven-publish' //https://docs.gradle.org/current/userguide/publishing_maven.html
+apply plugin: 'com.jfrog.bintray' //https://github.com/bintray/gradle-bintray-plugin
+
+def REPOSITORY_NAME = "android"
+def LIBRARY_VERSION = "1.0.0"
+def LIBRARY_GROUP_ID = "io.rm.log4j2.android"
+def SITE_URL  = "https://github.com/romsvm/log4j2-android"
+def GIT_URL = "https://github.com/romsvm/log4j2-android.git"
+def DEVELOPER_ID = "roman-mityukov"
+def LIBRARY_LICENSES = ["Apache-2.0"]
+def MODULE_ARTIFACT_ID = "log4j2-android"
+def MODULE_DESCRIPTION = "Log4j2 for Android"
+
+version = LIBRARY_VERSION
+group = LIBRARY_GROUP_ID
+
+project.afterEvaluate {
+    publishing {
+        publications {
+            ModuleArtifact(MavenPublication) {
+                artifact project.tasks.getByName("bundleReleaseAar") //aar
+                artifact project.tasks.getByName("androidSourcesJar") //sources
+                groupId LIBRARY_GROUP_ID
+                artifactId MODULE_ARTIFACT_ID
+                version "$version"
+
+                //the POM file generated does not include the dependency chain so it must be explicitly added using this
+                pom.withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    // Iterate over the implementation dependencies (we don't want the test ones), adding a <dependency> node for each
+                    configurations.implementation.allDependencies.each {
+                        // Ensure dependencies such as fileTree are not included in the pom.
+                        if (it.name != 'unspecified') {
+                            def dependencyNode = dependenciesNode.appendNode('dependency')
+                            dependencyNode.appendNode('groupId', it.group)
+                            dependencyNode.appendNode('artifactId', it.name)
+                            dependencyNode.appendNode('version', it.version)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    bintray {
+        user = "$System.env.BINTRAY_USER"
+        key = "$System.env.BINTRAY_KEY"
+        configurations = ['archives']
+        publications = ['ModuleArtifact']
+        publish = true //Whether version should be auto published after an upload
+        pkg {
+            repo = REPOSITORY_NAME
+            name = MODULE_ARTIFACT_ID
+            userOrg = DEVELOPER_ID
+            desc = MODULE_DESCRIPTION
+            publicDownloadNumbers = true
+            licenses = LIBRARY_LICENSES
+            vcsUrl = GIT_URL
+            websiteUrl = SITE_URL
+            version {
+                name = this.version
+                desc = MODULE_DESCRIPTION
+                //Date of the version release. Can accept one of the following formats: Date in the format of 'yyyy-MM-dd'T'HH:mm:ss.SSSZZ' java.util.Date instance
+                released = new Date()
+                vcsTag = this.version
+            }
+        }
+    }
+}
+
+//Archive java sources to jar
+task('androidSourcesJar', type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.srcDirs
+}
+
+bintrayUpload.dependsOn(['assemble', 'androidSourcesJar', 'generatePomFileForModuleArtifactPublication'])
