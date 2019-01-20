@@ -34,7 +34,22 @@ dependencies {
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
-val logger: Logger = LogManager.getLogger("MainActivity")
+val logger: Logger = LogManager.getLogger("MyLoggerName")
+```
+
+Также может понадобиться следующее в app/build.gradle.kts
+```
+android {
+  defaultConfig {
+    ...
+    javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = false
+  }
+}
+packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/DEPENDENCIES'
+    }
 ```
 
 # Credits:
