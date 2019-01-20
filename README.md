@@ -44,10 +44,9 @@ Log4j2Android.init(this.applicationContext, R.raw.log4j2_config)
     </Loggers>
 </Configuration>
 ```
-С помощью ${logsdirpathlookup:externaldir} можно указать путь applicationContext.getExternalFilesDir()
-С помощью ${logsdirpathlookup:internaldir} можно указать путь applicationContext.filesDir
+С помощью ${logsdirpathlookup:externaldir} можно указать путь applicationContext.getExternalFilesDir() или с помощью ${logsdirpathlookup:internaldir} путь applicationContext.filesDir
 
-Для работы библиотеки используется форк [log4j2:2.3](https://github.com/romsvm/logging-log4j2) в котором, для корректной работы на Android, удалена зависимость от java.lang.management.ManagementFactory в [org.apache.logging.log4j.core.lookup.JmxRuntimeInputArgumentsLookup](https://github.com/romsvm/logging-log4j2/blob/master/log4j-core/src/main/java/org/apache/logging/log4j/core/lookup/JmxRuntimeInputArgumentsLookup.java). На Android нельзя использовать jmx, поэтому это изменение никак не повлияет на работу логгера. По какой-то причине log4j2.disable.jmx=true перестало работать для Android с API>=26
+Для работы библиотеки используется форк [log4j2:2.3](https://github.com/romsvm/logging-log4j2), в котором, для корректной работы на Android, удалена зависимость от java.lang.management.ManagementFactory в [org.apache.logging.log4j.core.lookup.JmxRuntimeInputArgumentsLookup](https://github.com/romsvm/logging-log4j2/blob/master/log4j-core/src/main/java/org/apache/logging/log4j/core/lookup/JmxRuntimeInputArgumentsLookup.java). На Android нельзя использовать jmx, поэтому это изменение никак не повлияет на работу логгера. По какой-то причине log4j2.disable.jmx=true перестало работать для Android с API>=26
 
 Добавьте репозиторий с форком и библиотекой в build.gradle.kts
 ```
