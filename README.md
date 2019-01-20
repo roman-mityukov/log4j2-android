@@ -16,5 +16,5 @@ dependencies {
   annotationProcessor("org.apache.logging.log4j:log4j-core:2.3") //fork https://dl.bintray.com/roman-mityukov/android
 }
 ```
-#Credits:
+# Credits:
 - [https://loune.net/2016/05/using-log4j2-2-3-with-android/](https://loune.net/2016/05/using-log4j2-2-3-with-android/)
