@@ -7,14 +7,35 @@ maven {
   setUrl("https://dl.bintray.com/roman-mityukov/android")
 }
 ```
-И следующие зависимости в app/build.gradle.kts
+
+Можно использовать библиотеку через фасад slf4j (что позволит легко заменить логгер при необходимости, например на [logback](https://github.com/tony19/logback-android)). Для этого нужно добавить следующие зависимости
+```
+implementation("org.slf4j:slf4j-api:1.7.25") //simple logging facade for java
+implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.3") //bridge from log4j2 to slf4j
+implementation("io.rm.log4j2.android:log4j2-android:1.0.0") //this library
+```
+И в коде создать логгер с помощью slf4j api
+```
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+
+val logger: Logger = LoggerFactory.getLogger("MyLoggerName")
+```
+
+Или можно использовать api log4j2 напрямую
 ```
 dependencies {
-  implementation("org.apache.logging.log4j:log4j-api:2.3") //maven central
-  implementation("org.apache.logging.log4j:log4j-core:2.3") //fork https://dl.bintray.com/roman-mityukov/android
-  implementation("io.rm.log4j2.android:log4j2-android:1.0.0") //library https://dl.bintray.com/roman-mityukov/android
-  annotationProcessor("org.apache.logging.log4j:log4j-core:2.3") //fork https://dl.bintray.com/roman-mityukov/android
+  implementation("org.apache.logging.log4j:log4j-api:2.3")
+  implementation("io.rm.log4j2.android:log4j2-android:1.0.0")
 }
 ```
+Создать логгер
+```
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
+
+val logger: Logger = LogManager.getLogger("MainActivity")
+```
+
 # Credits:
 - [https://loune.net/2016/05/using-log4j2-2-3-with-android/](https://loune.net/2016/05/using-log4j2-2-3-with-android/)
