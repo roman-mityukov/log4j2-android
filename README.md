@@ -20,11 +20,11 @@ Log4j2Android.init(this.applicationContext, R.raw.log4j2_config)
         </Logcat>
         <RollingFile
             name="RollingFile"
-            fileName="${logsdirpathlookup:externaldir}/com.exapmple.app.log"
-            filePattern="${logsdirpathlookup:externaldir}/com.example.app-%i.log.zip">
+            fileName="${logsdirpathlookup:internaldir}/com.exapmple.app.log"
+            filePattern="${logsdirpathlookup:internaldir}/com.example.app-%i.log.zip">
             <ThresholdFilter
                 level="ALL"
-                onMatch="DENY"
+                onMatch="ACCEPT"
                 onMismatch="DENY" />
             <PatternLayout>
                 <Pattern>%d %p %c{1.} [%t] %m%n</Pattern>
@@ -60,6 +60,7 @@ maven {
 implementation("org.slf4j:slf4j-api:1.7.25") //simple logging facade for java
 implementation("org.apache.logging.log4j:log4j-slf4j-impl:2.3") //bridge from log4j2 to slf4j
 implementation("io.rm.log4j2.android:log4j2-android:1.0.0") //this library
+annotationProcessor("org.apache.logging.log4j:log4j-core:2.3")
 ```
 И в коде создать логгер с помощью slf4j api
 ```
@@ -82,21 +83,6 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
 val logger: Logger = LogManager.getLogger("MyLoggerName")
-```
-
-Также может понадобиться следующее в app/build.gradle.kts
-```
-android {
-  defaultConfig {
-    ...
-    javaCompileOptions.annotationProcessorOptions.includeCompileClasspath = false
-  }
-}
-packagingOptions {
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/DEPENDENCIES'
-    }
 ```
 # Credits:
 - [https://loune.net/2016/05/using-log4j2-2-3-with-android/](https://loune.net/2016/05/using-log4j2-2-3-with-android/)
